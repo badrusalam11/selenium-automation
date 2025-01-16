@@ -1,7 +1,6 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
-from features.global_variables import GlobalVariables
 
 def before_scenario(context, scenario):
     print("Before Scenario Hook")

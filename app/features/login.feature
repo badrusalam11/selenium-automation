@@ -1,3 +1,4 @@
+@login
 Feature: Login Functionality
   As a user
   I want to log in to the CURA Healthcare website

@@ -1,11 +1,11 @@
 from behave import given, when, then
-from app.test_objects.web_objects import WebObjects
-from app.test_objects.appointment_objects import AppointmentObjects
-from app.global_variables.global_variables import GlobalVariables
+from test.test_objects.web_objects import WebObjects
+from test.test_objects.appointment_objects import AppointmentObjects
+from test.global_variables.global_variables import GlobalVariables
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support.ui import WebDriverWait
 import time
-from app.data_files.script.appointment_datafile import AppointmentData
+from test.data_files.script.appointment_datafile import AppointmentData
 from utils.capture import Capture
 
 appointment_data = AppointmentData.get_appointment_data()

@@ -1,6 +1,6 @@
 import os
 import time
-from app import FEATURE_DIR
+from test import FEATURE_DIR
 
 class Capture:
     def capture_screenshot(driver, name):

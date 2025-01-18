@@ -1,5 +1,5 @@
-from app.utils.data_file import DataFile
-from app import FEATURE_DIR
+from test.utils.data_file import DataFile
+from test import FEATURE_DIR
 
 class AppointmentData:
     @staticmethod

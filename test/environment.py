@@ -1,3 +1,4 @@
+# this environment act as test_listener like Katalon
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
@@ -12,3 +13,9 @@ def after_scenario(context, scenario):
     print("After Scenario Hook")
     context.driver.quit()
 
+
+def before_test_suite():
+    pass
+
+def after_test_suite():
+    pass

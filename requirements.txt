@@ -3,3 +3,4 @@ behave
 webdriver-manager
 allure-behave
 openpyxl
+reportlab 

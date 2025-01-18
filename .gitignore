@@ -6,3 +6,6 @@ env
 *result.json
 /screenshots/*
 *.png
+/sessions/*
+/reports/pdf/*
+*.pdf

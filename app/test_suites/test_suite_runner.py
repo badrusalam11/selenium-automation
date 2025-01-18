@@ -1,8 +1,8 @@
 import os
 from subprocess import run
+from app import FEATURE_DIR
 
 def run_test_suite():
-    print(os.getcwd())
-    feature_dir = os.path.join(os.getcwd(), "app")
-    run(["behave", feature_dir, "--tags=@appointment"])
+    # feature_dir = os.path.join(os.getcwd(), "app")
+    run(["behave", FEATURE_DIR, "--tags=@appointment"])
 

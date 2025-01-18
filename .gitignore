@@ -4,3 +4,5 @@ env
 /reports/*
 /reports/json/*
 *result.json
+/screenshots/*
+*.png

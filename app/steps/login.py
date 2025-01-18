@@ -2,9 +2,9 @@ from behave import given, when, then
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
-from features.test_objects.web_objects import WebObjects
 from selenium.webdriver.chrome.service import Service
-from features.global_variables import GlobalVariables
+from app.test_objects.web_objects import WebObjects
+from app.global_variables.global_variables import GlobalVariables
 
 @given("I am on the login page")
 def step_open_login_page(context):

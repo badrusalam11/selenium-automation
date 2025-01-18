@@ -42,6 +42,5 @@ def step_fill_appointment_field(context, row):
 
 @then("I see 'Appointment Confirmation' page")
 def step_verify_appointment_confirmation(context):
-    time.sleep(6)
     Capture.capture_screenshot(context.driver, "confirmation_page")
     assert "Appointment Confirmation" in context.driver.page_source

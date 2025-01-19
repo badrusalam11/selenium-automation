@@ -53,6 +53,6 @@ def after_test_suite():
     all_scenarios = Report.collect_all_scenarios_excluding_current()
     # Save consolidated report
     Report.generate_json_report(all_scenarios)
-    Report.generate_pdf_report(session_manager.load_sessions())
+    Report.generate_pdf_report()
     # Optionally clear session files after generating the report
     session_manager.clear_session_files()

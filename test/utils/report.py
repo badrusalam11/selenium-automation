@@ -3,11 +3,13 @@ import os
 from pathlib import Path
 import time
 from datetime import datetime
-from reportlab.lib.pagesizes import letter
-from reportlab.pdfgen import canvas
-from reportlab.platypus import Table, TableStyle
-from reportlab.lib import colors
 from test import RESULTS_FILE, SCREENSHOTS_DIR, SESSIONS_FOLDER, REPORTS_JSON_FOLDER, REPORTS_PDF_FOLDER
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, Image
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib import colors
+
+
 
 
 class Report:
@@ -26,70 +28,67 @@ class Report:
         print(f"JSON Report generated: {report_path}")
 
     @staticmethod
-    def generate_pdf_report(SESSION):
-        print("Generating PDF Report...")
-
-        ss_running_session_dir_arr = [
-            os.path.join(SCREENSHOTS_DIR, session) for session in SESSION
-        ]
-        
+    def generate_pdf_report():
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        pdf_filename = os.path.join(REPORTS_PDF_FOLDER, f"{timestamp}_Test_Report.pdf")
-        pdf = canvas.Canvas(pdf_filename, pagesize=letter)
-        pdf.setTitle("Test Execution Report")
-        width, height = letter
-
-        pdf.setFont("Helvetica-Bold", 16)
-        pdf.drawString(200, height - 50, "Test Execution Report")
-        pdf.setFont("Helvetica", 12)
-        pdf.drawString(50, height - 80, f"Generated on: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-
-        # Read test results
-        test_results = []
-        if os.path.exists(RESULTS_FILE):
-            with open(RESULTS_FILE, "r") as file:
-                lines = file.readlines()
-                for line in lines:
-                    test_results.append(line.strip().split(","))
-        else:
-            test_results = [["Test Case", "Status", "Execution Time", "Screenshot"]]
-
-        # Add a table for test results
-        pdf.drawString(50, height - 110, "Test Results:")
-        table_data = [["Test Case", "Status", "Execution Time", "Screenshot"]] + test_results
-        table = Table(table_data, colWidths=[150, 100, 120, 150])
-
-        style = TableStyle([
-            ("BACKGROUND", (0, 0), (-1, 0), colors.grey),
-            ("TEXTCOLOR", (0, 0), (-1, 0), colors.whitesmoke),
-            ("ALIGN", (0, 0), (-1, -1), "CENTER"),
-            ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
-            ("BOTTOMPADDING", (0, 0), (-1, 0), 12),
-            ("GRID", (0, 0), (-1, -1), 1, colors.black),
-        ])
-        table.setStyle(style)
-
-        table.wrapOn(pdf, width, height)
-        table.drawOn(pdf, 50, height - 300)
-
-        # Add screenshots for failed test cases
-        pdf.drawString(50, height - 320, "Screenshots for Failed Test Cases:")
-        y_position = height - 350
-        for ss_running_session_dir in ss_running_session_dir_arr:
-            if os.path.isdir(ss_running_session_dir):
-                for screenshot in os.listdir(ss_running_session_dir):
-                    screenshot_path = os.path.join(ss_running_session_dir, screenshot)
-                    if os.path.isfile(screenshot_path):
-                        pdf.drawString(50, y_position, f"Screenshot: {screenshot}")
-                        pdf.drawImage(screenshot_path, 50, y_position - 100, width=200, height=100)
-                        y_position -= 150
-                        if y_position < 100:  # Start a new page if needed
-                            pdf.showPage()
-                            y_position = height - 50
-
-        # Save the PDF
-        pdf.save()
-        print(f"PDF report generated: {pdf_filename}")
+        report_json_path = os.path.join(REPORTS_JSON_FOLDER, f"{timestamp}_Test_Report.json")
+        report_pdf_path = os.path.join(REPORTS_PDF_FOLDER, f"{timestamp}_Test_Report.pdf")
+        
+        # Load the JSON data
+        with open(report_json_path, "r") as file:
+            report_data = json.load(file)
+        
+        # Set up the PDF document
+        doc = SimpleDocTemplate(report_pdf_path, pagesize=letter)
+        styles = getSampleStyleSheet()
+        elements = []
+        
+        # Title
+        title = Paragraph("Test Report", styles["Title"])
+        elements.append(title)
+        elements.append(Spacer(1, 12))
+        
+        # Iterate over features
+        for feature in report_data:
+            feature_name = f"Feature: {feature['feature_name']}"
+            feature_paragraph = Paragraph(feature_name, styles["Heading2"])
+            elements.append(feature_paragraph)
+            
+            scenario_name = f"Scenario: {feature['scenario_name']} (Status: {feature['status']})"
+            scenario_paragraph = Paragraph(scenario_name, styles["Heading3"])
+            elements.append(scenario_paragraph)
+            
+            elements.append(Spacer(1, 6))
+            
+            # Create a table for steps
+            step_data = [["Step Name", "Status", "Duration (ms)", "Screenshot(s)"]]
+            for step in feature["steps"]:
+                screenshots = []
+                for image_path in step["images"]:
+                    try:
+                        img = Image(image_path, width=100, height=100)  # Resize the image to fit into the PDF
+                        screenshots.append(img)
+                    except Exception as e:
+                        print(f"Failed to load image: {image_path}, Error: {e}")
+                        screenshots.append("Image not found")
+                
+                step_data.append([step["name"], step["status"], step["duration"], screenshots or "None"])
+            
+            # Add the table
+            table = Table(step_data, colWidths=[200, 100, 100, 200])
+            table.setStyle(TableStyle([
+                ("BACKGROUND", (0, 0), (-1, 0), colors.grey),
+                ("TEXTCOLOR", (0, 0), (-1, 0), colors.whitesmoke),
+                ("ALIGN", (0, 0), (-1, -1), "LEFT"),
+                ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+                ("BOTTOMPADDING", (0, 0), (-1, 0), 12),
+                ("BACKGROUND", (0, 1), (-1, -1), colors.beige),
+                ("GRID", (0, 0), (-1, -1), 1, colors.black),
+            ]))
+            elements.append(table)
+            elements.append(Spacer(1, 12))
+        # Build the PDF
+        doc.build(elements)
+        print(f"PDF report generated: {report_pdf_path}")
 
     @staticmethod
     def save_scenario_data(session_id, scenario_data):

@@ -29,7 +29,7 @@ def before_step(context, step):
 
 def after_step(context, step):
     # Log step details with time in milliseconds
-    step_data = step_data = Report.construct_step_data(step, context.step_start_time)
+    step_data = Report.construct_step_data(step, context.step_start_time)
     context.steps.append(step_data)
 
 def after_scenario(context, scenario):

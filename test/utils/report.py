@@ -3,22 +3,15 @@ import os
 from pathlib import Path
 import time
 from datetime import datetime
-from test import RESULTS_FILE, SCREENSHOTS_DIR, SESSIONS_FOLDER, REPORTS_JSON_FOLDER, REPORTS_PDF_FOLDER
+from test import PROPERTIES_DATA, RESULTS_FILE, SCREENSHOTS_DIR, SESSIONS_FOLDER, REPORTS_JSON_FOLDER, REPORTS_PDF_FOLDER
 from reportlab.lib.pagesizes import letter
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, Image
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib import colors
-
-
+from test.utils.config import Config
 
 
 class Report:
-    @staticmethod
-    def ensure_folders_exist():
-        for folder in [SESSIONS_FOLDER, REPORTS_JSON_FOLDER, REPORTS_PDF_FOLDER]:
-            if not os.path.exists(folder):
-                os.makedirs(folder)
-
     @staticmethod
     def generate_json_report(all_scenarios):
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
@@ -29,6 +22,9 @@ class Report:
 
     @staticmethod
     def generate_pdf_report():
+        print("PROPERTIES_DATA", PROPERTIES_DATA)
+        tester_name = PROPERTIES_DATA['tester_name']
+        print(tester_name)
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         report_json_path = os.path.join(REPORTS_JSON_FOLDER, f"{timestamp}_Test_Report.json")
         report_pdf_path = os.path.join(REPORTS_PDF_FOLDER, f"{timestamp}_Test_Report.pdf")
@@ -45,6 +41,11 @@ class Report:
         # Title
         title = Paragraph("Test Report", styles["Title"])
         elements.append(title)
+        elements.append(Spacer(1, 12))
+        
+        # Tester name
+        tester_name_section = Paragraph(f"Tester Name: {tester_name}", styles["Heading2"])
+        elements.append(tester_name_section)
         elements.append(Spacer(1, 12))
         
         # Iterate over features

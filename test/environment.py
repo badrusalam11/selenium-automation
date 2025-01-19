@@ -8,6 +8,7 @@ from selenium.webdriver.chrome.service import Service
 from test.utils.session_manager import session_manager  # Import the session manager
 from webdriver_manager.chrome import ChromeDriverManager
 from test.utils.report import Report
+from test.utils.event import EventUtil
 
 def before_scenario(context, scenario):
     print("Before Scenario Hook")
@@ -52,7 +53,8 @@ def after_test_suite():
     # Collect all scenario data, but exclude 'current_session.json'
     all_scenarios = Report.collect_all_scenarios_excluding_current()
     # Save consolidated report
-    Report.generate_json_report(all_scenarios)
-    Report.generate_pdf_report()
+    EventUtil.after_test_suite(all_scenarios)
+    # Report.generate_json_report(all_scenarios)
+    # Report.generate_pdf_report()
     # Optionally clear session files after generating the report
     session_manager.clear_session_files()

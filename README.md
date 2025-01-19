@@ -1,17 +1,21 @@
 # Installation
-1. Install python
-2. Install virtual environment: python -m venv env
-3. Activate environment: .\env\Scripts\activate
-4. Install all required libraries: pip install -r requirements.txt
-5. Run Test suite
+1. Install Python
+2. Set up a virtual environment: `python -m venv env`
+3. Activate the environment: `.\env\Scripts\activate`
+4. Install required libraries: `pip install -r requirements.txt`
+5. Run the test suite
 
-# Run test suite
-python run.py <test_suite_name>
+# Run Test Suite
+Run with: `python run.py <test_suite_name>`
 
-# Alternative way to run:
-./test <test_suite_name>
+# Alternative Run Command:
+Use: `./test <test_suite_name>`
 
-# Run with allure
-behave test/features/ -f allure_behave.formatter:AllureFormatter -o reports/json
+# Run with Allure
+1. Run the tests with Allure: `behave test/features/ -f allure_behave.formatter:AllureFormatter -o reports/json`
+2. Serve the report: `allure serve reports/`
 
-allure serve reports/
+# Configuration
+To change the report extension output, update the `REPORT_EXTENSION` in `test.properties`:
+- For both JSON and PDF: `REPORT_EXTENSION=JSON,PDF`
+- For JSON only: `REPORT_EXTENSION=JSON`

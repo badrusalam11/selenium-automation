@@ -18,6 +18,14 @@ class Report:
                 os.makedirs(folder)
 
     @staticmethod
+    def generate_json_report(all_scenarios):
+        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        report_path = os.path.join(REPORTS_JSON_FOLDER, f"{timestamp}_Test_Report.json")
+        with open(report_path, "w") as report_file:
+            json.dump(all_scenarios, report_file, indent=4)
+        print(f"JSON Report generated: {report_path}")
+
+    @staticmethod
     def generate_pdf_report(SESSION):
         print("Generating PDF Report...")
 
@@ -102,15 +110,7 @@ class Report:
         return all_scenarios
 
     @staticmethod
-    def generate_json_report(all_scenarios):
-        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        report_path = os.path.join(REPORTS_JSON_FOLDER, f"{timestamp}_Test_Report.json")
-        with open(report_path, "w") as report_file:
-            json.dump(all_scenarios, report_file, indent=4)
-        print(f"JSON Report generated: {report_path}")
-
-    @staticmethod
-    def construct_step_data(step, start_time):
+    def construct_step_data(step, start_time, images):
         """Construct step data with the given step details and timing."""
         end_time = int(time.time() * 1000)
         duration = end_time - start_time
@@ -120,7 +120,8 @@ class Report:
             "status": step.status.name,
             "start_time": start_time,
             "end_time": end_time,
-            "duration": duration
+            "duration": duration,
+            "images":images
         }
 
     @staticmethod

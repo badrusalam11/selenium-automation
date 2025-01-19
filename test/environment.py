@@ -19,6 +19,7 @@ def before_scenario(context, scenario):
     context.scenario_name = scenario.name
     context.start_time = int(time.time() * 1000)  # Start time in milliseconds
     context.steps = []
+    context.images = []
     # Manage sessions
     session_manager.append_session(context.driver.session_id)
     context.session_id = context.driver.session_id
@@ -28,9 +29,12 @@ def before_step(context, step):
     context.step_start_time = int(time.time() * 1000)
 
 def after_step(context, step):
+    print("after step", context.images)
     # Log step details with time in milliseconds
-    step_data = Report.construct_step_data(step, context.step_start_time)
+    step_data = Report.construct_step_data(step, context.step_start_time, context.images)
     context.steps.append(step_data)
+    # Clear images for the next step
+    context.images = []
 
 def after_scenario(context, scenario):
     print("After Scenario Hook")

@@ -4,3 +4,9 @@ env
 /reports/*
 /reports/json/*
 *result.json
+/screenshots/*
+*.png
+/sessions/*
+/reports/pdf/*
+*Report.pdf
+*Report.json

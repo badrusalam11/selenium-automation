@@ -1,6 +1,7 @@
 import json
 import os
 from pathlib import Path
+import time
 from datetime import datetime
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
@@ -107,3 +108,36 @@ class Report:
         with open(report_path, "w") as report_file:
             json.dump(all_scenarios, report_file, indent=4)
         print(f"JSON Report generated: {report_path}")
+
+    @staticmethod
+    def construct_step_data(step, start_time):
+        """Construct step data with the given step details and timing."""
+        end_time = int(time.time() * 1000)
+        duration = end_time - start_time
+
+        return {
+            "name": step.name,
+            "status": step.status.name,
+            "start_time": start_time,
+            "end_time": end_time,
+            "duration": duration
+        }
+
+    @staticmethod
+    def create_scenario_data(context, scenario):
+        """Creates a structured scenario report with all the steps and their details."""
+        end_time = int(time.time() * 1000)
+        execution_time = end_time - context.start_time
+
+        scenario_data = {
+            "feature_name": context.feature_name,
+            "scenario_name": context.scenario_name,
+            "status": "passed" if scenario.status.name == "passed" else "failed",
+            "steps": context.steps,
+            "duration": execution_time,
+            "start_time": context.start_time,
+            "end_time": end_time,
+            "session_id": context.session_id,
+        }
+
+        return scenario_data

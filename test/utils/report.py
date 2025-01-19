@@ -60,21 +60,46 @@ class Report:
             elements.append(Spacer(1, 6))
             
             # Create a table for steps
-            step_data = [["Step Name", "Status", "Duration (ms)", "Screenshot(s)"]]
+            step_data = [["Step Name", "Status", "Duration (ms)"]]
             for step in feature["steps"]:
-                screenshots = []
-                for image_path in step["images"]:
-                    try:
-                        img = Image(image_path, width=100, height=100)  # Resize the image to fit into the PDF
-                        screenshots.append(img)
-                    except Exception as e:
-                        print(f"Failed to load image: {image_path}, Error: {e}")
-                        screenshots.append("Image not found")
+                # Add step details
+                step_data.append([
+                    Paragraph(step["name"], styles["BodyText"]),
+                    step["status"],
+                    step["duration"]
+                ])
                 
-                step_data.append([step["name"], step["status"], step["duration"], screenshots or "None"])
-            
+                # Add screenshots in a separate row, ensuring no separation by vertical lines
+                if step["images"]:
+                    for image_path in step["images"]:
+                        try:
+                            img = Image(image_path)
+                            # Dynamically resize the image with a larger maximum width
+                            aspect_ratio = img.imageWidth / img.imageHeight
+                            max_width = 300  # Increased width for readability
+                            img_width = min(max_width, img.imageWidth)
+                            img_height = img_width / aspect_ratio
+                            img.drawWidth = img_width
+                            img.drawHeight = img_height
+                            
+                            # Check if image is in the row and merge all columns
+                            image_cells = [img, "", ""]  # Empty columns for merging
+                            step_data.append(image_cells)
+                        except Exception as e:
+                            print(f"Failed to load image: {image_path}, Error: {e}")
+                            image_cells = [Paragraph("Image not found", styles["BodyText"]), "", ""]
+                            step_data.append(image_cells)
+
             # Add the table
-            table = Table(step_data, colWidths=[200, 100, 100, 200])
+            table = Table(step_data, colWidths=[200, 100, 100])
+            
+            # Dynamically apply the SPAN style for rows containing images
+            row_styles = []
+            for idx, row in enumerate(step_data):
+                if isinstance(row[0], Image):  # Check if the first cell contains an image
+                    row_styles.append(("SPAN", (0, idx), (2, idx)))  # Merge all columns for this row
+
+            # Apply general table style
             table.setStyle(TableStyle([
                 ("BACKGROUND", (0, 0), (-1, 0), colors.grey),
                 ("TEXTCOLOR", (0, 0), (-1, 0), colors.whitesmoke),
@@ -83,12 +108,16 @@ class Report:
                 ("BOTTOMPADDING", (0, 0), (-1, 0), 12),
                 ("BACKGROUND", (0, 1), (-1, -1), colors.beige),
                 ("GRID", (0, 0), (-1, -1), 1, colors.black),
-            ]))
+            ] + row_styles))  # Apply dynamic row styles
+
             elements.append(table)
             elements.append(Spacer(1, 12))
+        
         # Build the PDF
         doc.build(elements)
         print(f"PDF report generated: {report_pdf_path}")
+
+
 
     @staticmethod
     def save_scenario_data(session_id, scenario_data):

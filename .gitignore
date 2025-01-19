@@ -8,4 +8,5 @@ env
 *.png
 /sessions/*
 /reports/pdf/*
-*.pdf
+*Report.pdf
+*Report.json

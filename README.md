@@ -1,4 +1,4 @@
-# Installation:
+# Installation
 1. Install python
 2. Install virtual environment: python -m venv env
 3. Activate environment: .\env\Scripts\activate
@@ -11,6 +11,7 @@ python run.py <test_suite_name>
 # Alternative way to run:
 ./test <test_suite_name>
 
-# Run with allure:
-behave -f allure_behave.formatter:AllureFormatter -o reports/json features/
+# Run with allure
+behave test/features/ -f allure_behave.formatter:AllureFormatter -o reports/json
+
 allure serve reports/

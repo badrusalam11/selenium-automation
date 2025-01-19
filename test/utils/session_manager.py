@@ -1,6 +1,7 @@
 import json
 import os
-from test import SESSION_FILE
+from pathlib import Path
+from test import SESSION_FILE, SESSIONS_FOLDER
 
 class SessionManager:
     def __init__(self):
@@ -40,6 +41,10 @@ class SessionManager:
             os.remove(self.session_file)
         self.session = []  # Clear the in-memory session list
 
+    def clear_session_files(self):
+        sessions_path = Path(SESSIONS_FOLDER)
+        for session_file in sessions_path.glob("*.json"):
+            session_file.unlink()
 
 
 # Singleton instance to access session manager

@@ -1,35 +1,35 @@
-from datetime import datetime
+import json
 import os
-from test import REPORTS_PDF_DIR, RESULTS_FILE, SCREENSHOTS_DIR
+from pathlib import Path
+from datetime import datetime
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 from reportlab.platypus import Table, TableStyle
 from reportlab.lib import colors
+from test import RESULTS_FILE, SCREENSHOTS_DIR, SESSIONS_FOLDER, REPORTS_JSON_FOLDER, REPORTS_PDF_FOLDER
+
 
 class Report:
-    # Ensure report directory exists
-    if not os.path.exists(REPORTS_PDF_DIR):
-        os.makedirs(REPORTS_PDF_DIR)
+    @staticmethod
+    def ensure_folders_exist():
+        for folder in [SESSIONS_FOLDER, REPORTS_JSON_FOLDER, REPORTS_PDF_FOLDER]:
+            if not os.path.exists(folder):
+                os.makedirs(folder)
 
     @staticmethod
     def generate_pdf_report(SESSION):
-        print(SESSION)
-        ss_running_session_dir_arr = []
-        for session in SESSION:
-            ss_running_session_dir = os.path.join(SCREENSHOTS_DIR, session)
-            ss_running_session_dir_arr.append(ss_running_session_dir)
-        print(ss_running_session_dir_arr)
-        
-        # PDF filename with timestamp
-        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        pdf_filename = os.path.join(REPORTS_PDF_DIR, f"Test_Report_{timestamp}.pdf")
+        print("Generating PDF Report...")
 
-        # Create a canvas
+        ss_running_session_dir_arr = [
+            os.path.join(SCREENSHOTS_DIR, session) for session in SESSION
+        ]
+        
+        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        pdf_filename = os.path.join(REPORTS_PDF_FOLDER, f"{timestamp}_Test_Report.pdf")
         pdf = canvas.Canvas(pdf_filename, pagesize=letter)
         pdf.setTitle("Test Execution Report")
         width, height = letter
 
-        # Add a title
         pdf.setFont("Helvetica-Bold", 16)
         pdf.drawString(200, height - 50, "Test Execution Report")
         pdf.setFont("Helvetica", 12)
@@ -41,7 +41,7 @@ class Report:
             with open(RESULTS_FILE, "r") as file:
                 lines = file.readlines()
                 for line in lines:
-                    test_results.append(line.strip().split(","))  # Assuming CSV format
+                    test_results.append(line.strip().split(","))
         else:
             test_results = [["Test Case", "Status", "Execution Time", "Screenshot"]]
 
@@ -50,7 +50,6 @@ class Report:
         table_data = [["Test Case", "Status", "Execution Time", "Screenshot"]] + test_results
         table = Table(table_data, colWidths=[150, 100, 120, 150])
 
-        # Style the table
         style = TableStyle([
             ("BACKGROUND", (0, 0), (-1, 0), colors.grey),
             ("TEXTCOLOR", (0, 0), (-1, 0), colors.whitesmoke),
@@ -61,11 +60,10 @@ class Report:
         ])
         table.setStyle(style)
 
-        # Add table to PDF
         table.wrapOn(pdf, width, height)
         table.drawOn(pdf, 50, height - 300)
 
-        # Add screenshots
+        # Add screenshots for failed test cases
         pdf.drawString(50, height - 320, "Screenshots for Failed Test Cases:")
         y_position = height - 350
         for ss_running_session_dir in ss_running_session_dir_arr:
@@ -83,3 +81,29 @@ class Report:
         # Save the PDF
         pdf.save()
         print(f"PDF report generated: {pdf_filename}")
+
+    @staticmethod
+    def save_scenario_data(session_id, scenario_data):
+        session_file = f"test/sessions/{session_id}.json"
+        with open(session_file, "w") as file:
+            json.dump(scenario_data, file, indent=4)
+
+    @staticmethod
+    def collect_all_scenarios_excluding_current():
+        all_scenarios = []
+        sessions_path = Path("test/sessions")
+        for session_file in sessions_path.glob("*.json"):
+            if session_file.name == "current_session.json":
+                continue
+            with open(session_file, "r") as file:
+                scenario_data = json.load(file)
+                all_scenarios.append(scenario_data)
+        return all_scenarios
+
+    @staticmethod
+    def generate_json_report(all_scenarios):
+        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        report_path = os.path.join(REPORTS_JSON_FOLDER, f"{timestamp}_Test_Report.json")
+        with open(report_path, "w") as report_file:
+            json.dump(all_scenarios, report_file, indent=4)
+        print(f"JSON Report generated: {report_path}")

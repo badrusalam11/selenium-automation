@@ -53,8 +53,7 @@ def after_test_suite():
     # Collect all scenario data, but exclude 'current_session.json'
     all_scenarios = Report.collect_all_scenarios_excluding_current()
     # Save consolidated report
-    EventUtil.after_test_suite(all_scenarios)
-    # Report.generate_json_report(all_scenarios)
-    # Report.generate_pdf_report()
+    event = EventUtil()
+    event.after_test_suite(all_scenarios)
     # Optionally clear session files after generating the report
     session_manager.clear_session_files()

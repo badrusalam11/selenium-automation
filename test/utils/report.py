@@ -12,22 +12,27 @@ from test.utils.config import Config
 
 
 class Report:
-    @staticmethod
-    def generate_json_report(all_scenarios):
+    def get_report_name(self, folder_path, extension="json"):
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        report_path = os.path.join(REPORTS_JSON_FOLDER, f"{timestamp}_Test_Report.json")
+        report_name = os.path.join(folder_path, f"{timestamp}_Test_Report.{extension}")
+        return report_name
+
+    def generate_json_report(self, all_scenarios):
+        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        print(all_scenarios)
+        # report_path = os.path.join(REPORTS_JSON_FOLDER, f"{timestamp}_Test_Report.json")
+        report_path= self.get_report_name(REPORTS_JSON_FOLDER, 'json')
         with open(report_path, "w") as report_file:
             json.dump(all_scenarios, report_file, indent=4)
         print(f"JSON Report generated: {report_path}")
+        return report_path
 
-    @staticmethod
-    def generate_pdf_report():
+    def generate_pdf_report(self):
         print("PROPERTIES_DATA", PROPERTIES_DATA)
         tester_name = PROPERTIES_DATA['tester_name']
-        print(tester_name)
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        report_json_path = os.path.join(REPORTS_JSON_FOLDER, f"{timestamp}_Test_Report.json")
-        report_pdf_path = os.path.join(REPORTS_PDF_FOLDER, f"{timestamp}_Test_Report.pdf")
+        report_json_path = self.get_report_name(REPORTS_JSON_FOLDER, "json")
+        report_pdf_path = self.get_report_name(REPORTS_PDF_FOLDER, "pdf")
         
         # Load the JSON data
         with open(report_json_path, "r") as file:
@@ -117,7 +122,7 @@ class Report:
         # Build the PDF
         doc.build(elements)
         print(f"PDF report generated: {report_pdf_path}")
-
+        return report_pdf_path
 
 
     @staticmethod

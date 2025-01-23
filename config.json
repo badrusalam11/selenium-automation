@@ -1,0 +1,8 @@
+{
+    "email":{
+        "username":"dummy-email@mail.com",
+        "password":"thisIsThePassword",   
+        "smtp_server":"smtp.gmail.com",
+        "smtp_port":587
+    }
+}

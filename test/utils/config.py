@@ -1,5 +1,7 @@
 import configparser
+import json
 import os
+from dotenv import load_dotenv
 from test import (
     PROPERTIES_FILE, 
     SESSIONS_FOLDER, 
@@ -29,3 +31,35 @@ class Config:
             else:
                 properties[key] = value
         return properties
+    
+    def load_config(config_path="config.json"):
+        """
+        Loads configuration data from an .env file if it exists.
+        Otherwise, loads configuration from the provided JSON file.
+        :param config_path: Path to the config.json file (used if .env is not found).
+        :return: Dictionary containing the loaded configuration data.
+        """
+        config = {}
+        # Check for .env file
+        if os.path.exists(".env"):
+            print("Loading configuration from .env file...")
+            load_dotenv()  # Load environment variables from .env
+            config["email"] = {
+                "username": os.getenv("EMAIL_USERNAME"),
+                "password": os.getenv("EMAIL_PASSWORD"),
+                "smtp_server": os.getenv("EMAIL_SMTP_SERVER"),
+                "smtp_port": os.getenv("EMAIL_SMTP_PORT"),
+            }
+            return config
+
+        # Fall back to config.json if .env not found
+        if os.path.exists(config_path):
+            print(f"Loading configuration from {config_path}...")
+            try:
+                with open(config_path, "r") as config_file:
+                    config = json.load(config_file)
+                    return config
+            except json.JSONDecodeError as e:
+                raise ValueError(f"Failed to parse JSON file: {e}")
+        else:
+            raise FileNotFoundError("No configuration file found (.env or config.json).")

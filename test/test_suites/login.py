@@ -11,7 +11,7 @@ def run_suite():
     tags_argument = f"--tags={','.join(tags)}"
 
     # Run behave with the tags for this suite
-    run(["behave", FEATURE_DIR, tags_argument, "-f", "allure_behave.formatter:AllureFormatter", "-o", "reports/json"])
+    run(["behave", FEATURE_DIR, tags_argument])
 
     # if you want to run with debugging
     # result = run(["behave", FEATURE_DIR, tags_argument], capture_output=True, text=True)

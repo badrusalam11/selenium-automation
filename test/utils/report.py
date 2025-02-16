@@ -9,16 +9,15 @@ from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, 
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib import colors
 from test.utils.config import Config
-
+from test.utils.formatter import Formatter
 
 class Report:
     def get_report_name(self, folder_path, extension="json"):
-        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        timestamp = Formatter.get_timestamp()
         report_name = os.path.join(folder_path, f"{timestamp}_Test_Report.{extension}")
         return report_name
 
     def generate_json_report(self, all_scenarios):
-        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         print(all_scenarios)
         # report_path = os.path.join(REPORTS_JSON_FOLDER, f"{timestamp}_Test_Report.json")
         report_path= self.get_report_name(REPORTS_JSON_FOLDER, 'json')
@@ -30,7 +29,6 @@ class Report:
     def generate_pdf_report(self):
         print("PROPERTIES_DATA", PROPERTIES_DATA)
         tester_name = PROPERTIES_DATA['tester_name']
-        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         report_json_path = self.get_report_name(REPORTS_JSON_FOLDER, "json")
         report_pdf_path = self.get_report_name(REPORTS_PDF_FOLDER, "pdf")
         

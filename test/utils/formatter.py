@@ -20,5 +20,5 @@ class Formatter:
     
     @staticmethod
     def get_timestamp() -> str:
-        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         return timestamp

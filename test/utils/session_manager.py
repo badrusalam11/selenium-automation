@@ -1,18 +1,39 @@
 import json
 import os
 from pathlib import Path
-from test import SESSION_FILE, SESSIONS_FOLDER
+from test import SESSION_FILE, SESSIONS_FOLDER, RUNNING_ID_FILE
+from test.utils.formatter import Formatter
 
 class SessionManager:
     def __init__(self):
         # Path to store sessions in a JSON file
-        self.session_file = SESSION_FILE
+        self.session_file = SESSION_FILE 
+        self.running_id_file = RUNNING_ID_FILE 
         # Ensure the directory exists
         if not os.path.exists(os.path.dirname(self.session_file)):
             os.makedirs(os.path.dirname(self.session_file))
 
         # Load the sessions from the JSON file on initialization
         self.session = self.load_sessions()
+    
+    def generate_running_id(self) -> str:
+        running_id = Formatter.get_timestamp()
+        running_data = {
+            'running_id': running_id
+        }
+        with open(self.running_id_file, "w") as file:
+            json.dump(running_data, file)
+
+    def load_running_id(self):
+        if os.path.exists(self.running_id_file):
+            with open(self.running_id_file, "r") as file:
+                return json.load(file)
+        return {}
+    
+    def clear_running_id(self):
+        if os.path.exists(self.running_id_file):
+            os.remove(self.running_id_file)
+        self.session = []
 
     def load_sessions(self) -> list:
         """Loads the session data from the JSON file."""

@@ -57,6 +57,10 @@ def after_scenario(context, scenario):
 
 def before_test_suite():
     session_manager.clear_session_files()
+    session_manager.generate_running_id()
+    running_data = session_manager.load_running_id()
+    print("Before Test Suite Hook")
+    print("Running test for id: ", running_data['running_id'] + "...")
 
 def after_test_suite():
     print("After Test Suite Hook")
@@ -67,3 +71,4 @@ def after_test_suite():
     event.after_test_suite(all_scenarios)
     # Optionally clear session files after generating the report
     session_manager.clear_session_files()
+    session_manager.clear_running_id()

@@ -10,11 +10,13 @@ from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib import colors
 from test.utils.config import Config
 from test.utils.formatter import Formatter
+from test.utils.session_manager import session_manager
 
 class Report:
     def get_report_name(self, folder_path, extension="json"):
-        timestamp = Formatter.get_timestamp()
-        report_name = os.path.join(folder_path, f"{timestamp}_Test_Report.{extension}")
+        running_data = session_manager.load_running_id()
+        running_id = running_data['running_id']
+        report_name = os.path.join(folder_path, f"{running_id}_Test_Report.{extension}")
         return report_name
 
     def generate_json_report(self, all_scenarios):
@@ -50,7 +52,7 @@ class Report:
         tester_name_section = Paragraph(f"Tester Name: {tester_name}", styles["Heading2"])
         elements.append(tester_name_section)
         elements.append(Spacer(1, 12))
-        
+        print("report_data", report_data)
         # Iterate over features
         for feature in report_data:
             feature_name = f"Feature: {feature['feature_name']}"
@@ -134,7 +136,7 @@ class Report:
         all_scenarios = []
         sessions_path = Path("test/sessions")
         for session_file in sessions_path.glob("*.json"):
-            if session_file.name == "current_session.json":
+            if (session_file.name == "current_session.json" ) or (session_file.name =="running_id.json"):
                 continue
             with open(session_file, "r") as file:
                 scenario_data = json.load(file)

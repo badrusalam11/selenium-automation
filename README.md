@@ -22,3 +22,10 @@ To change the report extension output, update the `REPORT_EXTENSION` in `test.pr
 
 # Docker build
 docker build -t selenium-test .     
+
+# Run the application via docker
+docker-compose up
+
+# Run via docker swarm
+1. Initiate docker swarm: docker swarm init
+2. Deploy the stack : docker stack deploy -c docker-stack.yml selenium_automation

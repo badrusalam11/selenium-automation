@@ -169,6 +169,7 @@ def selenium_reset_run():
         'message':'Success to reset selenium run'
     }), 200
 
-
+# Bind to 0.0.0.0 and use dynamic port
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5050, debug=True)
+    port = int(os.environ.get("FLASK_PORT", 5000))  # Default to 5000 if not set
+    app.run(host="0.0.0.0", port=port, debug=True)

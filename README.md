@@ -19,3 +19,6 @@ Use: `./test <test_suite_name>`
 To change the report extension output, update the `REPORT_EXTENSION` in `test.properties`:
 - For both JSON and PDF: `REPORT_EXTENSION=JSON,PDF`
 - For JSON only: `REPORT_EXTENSION=JSON`
+
+# Docker build
+docker build -t selenium-test .     

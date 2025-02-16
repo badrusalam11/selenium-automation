@@ -10,3 +10,5 @@ env
 /reports/pdf/*
 *Report.pdf
 *Report.json
+.env
+.vscode

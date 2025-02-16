@@ -4,3 +4,4 @@ webdriver-manager
 allure-behave
 openpyxl
 reportlab 
+python-dotenv

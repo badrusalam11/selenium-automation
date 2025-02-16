@@ -1,8 +1,10 @@
 {
+    "environment":"local",
     "email":{
         "username":"dummy-email@mail.com",
         "password":"thisIsThePassword",   
         "smtp_server":"smtp.gmail.com",
-        "smtp_port":587
+        "smtp_port":587,
+        "enable_tls": true
     }
 }

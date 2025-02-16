@@ -15,6 +15,7 @@ class Email:
         self.sender_password = CONFIG_DATA['email']['password']
         self.smtp_server = CONFIG_DATA['email']['smtp_server']
         self.smtp_port = CONFIG_DATA['email']['smtp_port']
+        self.enable_tls = CONFIG_DATA['email']['enable_tls']
 
     def send_mail(self, recipient_email, subject, body, file_path):
         """
@@ -56,10 +57,11 @@ class Email:
         # Send the email
         try:
             with smtplib.SMTP(self.smtp_server, self.smtp_port) as server:
-                server.starttls()  # Start TLS encryption
-                server.login(self.sender_email, self.sender_password)
+                if self.enable_tls:
+                    server.starttls()
+                    server.login(self.sender_email, self.sender_password)
                 sendmail = server.sendmail(self.sender_email, recipient_email, message.as_string())
                 print(sendmail)            
-            print("Email sent successfully!")
+            print("Email sent successfully to ", recipient_email)
         except Exception as e:
             print(f"Failed to send email: {e}")

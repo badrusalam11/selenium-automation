@@ -9,11 +9,21 @@ from test.utils.session_manager import session_manager  # Import the session man
 from webdriver_manager.chrome import ChromeDriverManager
 from test.utils.report import Report
 from test.utils.event import EventUtil
+from selenium.webdriver.chrome.options import Options
+from test import CONFIG_DATA
+
 
 def before_scenario(context, scenario):
     print("Before Scenario Hook")
     chrome_service = Service(ChromeDriverManager().install())
-    context.driver = webdriver.Chrome(service=chrome_service)
+    chrome_options = Options()
+    if CONFIG_DATA['environment']=='stagging':
+        chrome_options.add_argument("--no-sandbox")  # Required inside Docker
+        chrome_options.add_argument("--disable-dev-shm-usage")  # Helps avoid memory issues
+        chrome_options.add_argument("--headless")  # Optional: Run Chrome in headless mode
+        chrome_options.add_argument("--remote-debugging-port=9222")  # Debugging
+        chrome_options.add_argument("--user-data-dir=/tmp/chrome-user-data")  # Unique profile
+    context.driver = webdriver.Chrome(service=chrome_service, options=chrome_options)
     context.driver.maximize_window()
     # Store feature, scenario details
     context.feature_name = scenario.feature.name

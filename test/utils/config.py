@@ -8,6 +8,7 @@ from test import (
     REPORTS_JSON_FOLDER, 
     REPORTS_PDF_FOLDER
 )
+from test.utils.formatter import Formatter
 
 class Config:
     def ensure_folders_exist():
@@ -44,11 +45,13 @@ class Config:
         if os.path.exists(".env"):
             print("Loading configuration from .env file...")
             load_dotenv()  # Load environment variables from .env
+            config['environment'] = os.getenv("ENVIRONMENT")
             config["email"] = {
                 "username": os.getenv("EMAIL_USERNAME"),
                 "password": os.getenv("EMAIL_PASSWORD"),
                 "smtp_server": os.getenv("EMAIL_SMTP_SERVER"),
                 "smtp_port": os.getenv("EMAIL_SMTP_PORT"),
+                "enable_tls": Formatter.str_to_bool(os.getenv("EMAIL_ENABLE_TLS")),
             }
             return config
 

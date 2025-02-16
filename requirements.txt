@@ -5,3 +5,4 @@ allure-behave
 openpyxl
 reportlab 
 python-dotenv
+flask

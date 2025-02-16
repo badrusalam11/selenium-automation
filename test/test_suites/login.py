@@ -1,7 +1,6 @@
 # insert the tags to run in your test_suite
 tags = [
         "@login",
-        "@appointment", 
         ]
 
 def run_suite():

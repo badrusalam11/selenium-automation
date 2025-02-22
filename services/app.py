@@ -2,6 +2,7 @@ from datetime import datetime
 import json
 import os
 from pathlib import Path
+import re
 import sys
 import time
 from flask import Flask, request, jsonify
@@ -9,11 +10,14 @@ import subprocess
 import threading
 
 app = Flask(__name__)
-FEATURE_DIR = os.path.join(os.getcwd(), "test")
-RUNNING_ID_FILE = os.path.join(FEATURE_DIR, "sessions", "running_id.json")
-TEST_SUITES_DIR = os.path.join(FEATURE_DIR, "test_suites")
-SESSION_FILE = os.path.join(FEATURE_DIR, "sessions", "current_session.json")
-SESSIONS_FOLDER = os.path.join(FEATURE_DIR, "sessions")
+TEST_DIR = os.path.join(os.getcwd(), "test")
+RUNNING_ID_FILE = os.path.join(TEST_DIR, "sessions", "running_id.json")
+TEST_SUITES_DIR = os.path.join(TEST_DIR, "test_suites")
+SESSION_FILE = os.path.join(TEST_DIR, "sessions", "current_session.json")
+SESSIONS_FOLDER = os.path.join(TEST_DIR, "sessions")
+BIND_TEST_CASE_FOLDER = os.path.join(TEST_DIR, "bind_test_case")
+FEATURE_DIR = os.path.join(TEST_DIR, "features")
+
 
 def execute_selenium_tests(testsuite_id):
     """
@@ -56,7 +60,7 @@ def wait_for_running_id(timeout=10, interval=0.5):
     
     return None  # Timeout reached
 
-def get_testsuites(directory=TEST_SUITES_DIR):
+def get_testsuites(directory=TEST_SUITES_DIR, extension=".py"):
     """
     Recursively get all .py filenames inside the given directory without the .py extension.
     
@@ -71,13 +75,89 @@ def get_testsuites(directory=TEST_SUITES_DIR):
     # Walk through all directories and subdirectories
     for root, _, files in os.walk(directory):
         for file in files:
-            if file.endswith(".py"):
+            if file.endswith(extension):
                 if file == "test_suite_runner.py":
                     continue
                 filename_without_ext = os.path.splitext(file)[0]  # Remove .py extension
                 python_files.add(filename_without_ext)
     return sorted(list(python_files))  # Sort for consistency
 
+def bind_test_case(test_case_file):
+        test_case_path = os.path.join(BIND_TEST_CASE_FOLDER, test_case_file)
+        if os.path.exists(test_case_path):
+            print(f"Loading configuration from {test_case_path}...")
+            try:
+                with open(test_case_path, "r") as config_file:
+                    config = json.load(config_file)
+                    return config
+            except json.JSONDecodeError as e:
+                raise ValueError(f"Failed to parse JSON file: {e}")
+        else:
+            raise FileNotFoundError("No bind test case found.")
+
+def format_feature(feature_string):
+    # input: @feature, output: feature.feature
+    # Remove special characters (like @, #, etc.)
+    sanitized = re.sub(r"[^a-zA-Z0-9_]", "", feature_string)
+    
+    # Append `.feature` extension
+    formatted_filename = f"{sanitized}.feature"
+    
+    return formatted_filename
+
+def parse_feature_file(file_path):
+    feature_data = {
+        "feature": "",
+        "scenarios": []
+    }
+    
+    scenario = None
+    examples = []
+    
+    with open(file_path, 'r', encoding='utf-8') as file:
+        for line in file:
+            line = line.strip()
+            
+            # Capture feature title
+            if line.startswith("Feature:"):
+                feature_data["feature"] = line.replace("Feature:", "").strip()
+
+            # Capture Scenario or Scenario Outline
+            elif line.startswith("Scenario:") or line.startswith("Scenario Outline:"):
+                if scenario:
+                    if examples:
+                        scenario["examples"] = examples
+                    feature_data["scenarios"].append(scenario)
+                
+                scenario_type = "Scenario Outline" if line.startswith("Scenario Outline:") else "Scenario"
+                scenario = {
+                    "type": scenario_type,
+                    "scenario": line.replace("Scenario:", "").replace("Scenario Outline:", "").strip(),
+                    "steps": [],
+                    "examples": []
+                }
+                examples = []
+
+            # Capture steps (Given, When, Then, And, But)
+            elif re.match(r"^(Given|When|Then|And|But) ", line):
+                if scenario:
+                    scenario["steps"].append(line)
+            
+            # Capture Examples table
+            elif line.startswith("Examples:"):
+                examples = []
+
+            elif "|" in line:  # Table row (Example data)
+                if scenario:
+                    examples.append(line.strip())
+
+        # Append the last scenario
+        if scenario:
+            if examples:
+                scenario["examples"] = examples
+            feature_data["scenarios"].append(scenario)
+
+    return feature_data
 
 @app.route('/selenium/run', methods=['POST'])
 def selenium_run():
@@ -141,9 +221,29 @@ def selenium_testsuites():
     testsuites_list = get_testsuites()
     return jsonify({
     'status': 'success',
-    'message': 'Selenium test triggered',
+    'message': 'Test Suites',
     'data': {
         'testsuites': testsuites_list 
+    }
+}), 200
+
+@app.route('/selenium/testsuite/detail', methods=['POST'])
+def selenium_testsuite_detail():
+    payload = request.get_json()
+    testsuite_name = payload.get('testsuite_name')
+    testcase_list = bind_test_case(testsuite_name+'.json')
+    feature_data = []
+    for testcase in testcase_list:
+        feature_file = format_feature(testcase)
+        feature_path = os.path.join(FEATURE_DIR, feature_file)
+        data = parse_feature_file(feature_path)
+        feature_data.append(data)
+    return jsonify({
+    'status': 'success',
+    'message': 'Detail Test Suite',
+    'data': {
+        'testsuite_name':testsuite_name,
+        'feature_data': feature_data 
     }
 }), 200
 

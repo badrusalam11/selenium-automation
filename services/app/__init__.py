@@ -8,4 +8,5 @@ SESSION_FILE = os.path.join(TEST_DIR, "sessions", "current_session.json")
 SESSIONS_FOLDER = os.path.join(TEST_DIR, "sessions")
 BIND_TEST_CASE_FOLDER = os.path.join(TEST_DIR, "bind_test_case")
 FEATURE_DIR = os.path.join(TEST_DIR, "features")
+PROPERTIES_FILE = os.path.join(os.getcwd(), "test.properties")
 

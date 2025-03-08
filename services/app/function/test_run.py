@@ -1,11 +1,13 @@
 
+import configparser
 import json
 import os
 import subprocess
 import sys
 import time
 
-from app import RUNNING_ID_FILE
+from app import PROPERTIES_FILE, RUNNING_ID_FILE
+from app.function.utils import load_properties
 
 
 def execute_selenium_tests(testsuite_id):
@@ -47,3 +49,44 @@ def wait_for_running_id(timeout=10, interval=0.5):
             return running_data
         time.sleep(interval)  # Wait before retrying
     return None  # Timeout reached
+
+
+def change_email(new_email):
+    file_path = PROPERTIES_FILE
+    # Create a ConfigParser instance and preserve key case
+    config = configparser.ConfigParser()
+    config.optionxform = lambda option: option  # Preserve key case
+    
+    # Read the properties file
+    config.read(file_path)
+    
+    # Update the email in the [DEFAULT] section
+    if 'DEFAULT' in config:
+        config['DEFAULT']['TESTER_EMAIL'] = new_email
+    else:
+        # If there is no [DEFAULT] section, create one
+        config['DEFAULT'] = {'TESTER_EMAIL': new_email}
+    
+    # Write the changes back to the file
+    with open(file_path, 'w') as configfile:
+        config.write(configfile)
+
+def disable_email():
+    file_path = PROPERTIES_FILE
+    # Create a ConfigParser instance and preserve key case
+    config = configparser.ConfigParser()
+    config.optionxform = lambda option: option  # Preserve key case
+    
+    # Read the properties file
+    config.read(file_path)
+    
+    # Update the email in the [DEFAULT] section
+    if 'DEFAULT' in config:
+        config['DEFAULT']['IS_SEND_MAIL'] = 'FALSE'
+    else:
+        # If there is no [DEFAULT] section, create one
+        config['DEFAULT'] = {'IS_SEND_MAIL': 'FALSE'}
+    
+    # Write the changes back to the file
+    with open(file_path, 'w') as configfile:
+        config.write(configfile)

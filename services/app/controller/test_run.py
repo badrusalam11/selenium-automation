@@ -1,7 +1,7 @@
 import threading
 from flask import jsonify, make_response
 
-from app.function.test_run import execute_selenium_tests, load_running_id, wait_for_running_id
+from app.function.test_run import change_email, disable_email, execute_selenium_tests, load_running_id, wait_for_running_id
 from app.function.test_suites import get_testsuites
 from app.function.session import clear_session_files, clear_sessions
 
@@ -10,6 +10,11 @@ def test_run(payload):
     testsuite_id = payload.get('testsuite_id') if payload else None
     email = payload.get('email') if payload else None
     
+    # check if email is not empty
+    if email:
+        change_email(email)
+    else:
+        disable_email()
     # check if testsuite_id is empty
     if not testsuite_id:
         return make_response(jsonify({

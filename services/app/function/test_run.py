@@ -6,7 +6,7 @@ import subprocess
 import sys
 import time
 
-from app import PROPERTIES_FILE, RUNNING_ID_FILE
+from app import LOG_FILE_NAME, PROPERTIES_FILE, RUNNING_ID_FILE
 from app.function.utils import load_properties
 
 
@@ -18,15 +18,15 @@ def execute_selenium_tests(testsuite_id):
     try:
         # Run an external script (modify the command as needed)
         command = [sys.executable, "run.py", testsuite_id]
-        result = subprocess.run(
-            command,
-            capture_output=True,
-            text=True,
-            cwd=os.getcwd()
-        )
-
-        # Log output for debugging
-        print("Selenium Test Output:", result.stdout)
+        with open(LOG_FILE_NAME, 'a') as log_file:
+            result = subprocess.run(
+                command,
+                # capture_output=True,
+                text=True,
+                cwd=os.getcwd(),
+                stdout=log_file,
+                stderr=log_file
+            )
         if result.stderr:
             print("Selenium Test Error:", result.stderr)
     except Exception as e:

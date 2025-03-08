@@ -1,13 +1,13 @@
 import os
 import time
-from test import FEATURE_DIR
+from test import TEST_DIR
 
 class Capture:
     def capture_screenshot(context, name=""):
         # timestamp = time.strftime("%Y%m%d-%H%M%S")
         timestamp = str(time.time())
         session_id = context.driver.session_id
-        screenshot_folder = os.path.join(FEATURE_DIR, "sessions", session_id)
+        screenshot_folder = os.path.join(TEST_DIR, "sessions", session_id)
         # Create a folder to save screenshots if it doesn't exist
         if not os.path.exists(screenshot_folder):
             os.makedirs(screenshot_folder)

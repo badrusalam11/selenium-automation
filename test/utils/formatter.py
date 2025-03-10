@@ -1,4 +1,7 @@
 from datetime import datetime
+import json
+import os
+from test import BIND_TEST_CASE_FOLDER
 
 
 class Formatter:
@@ -22,3 +25,16 @@ class Formatter:
     def get_timestamp() -> str:
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         return timestamp
+    
+    def bind_test_case(test_case_file):
+        test_case_path = os.path.join(BIND_TEST_CASE_FOLDER, test_case_file)
+        if os.path.exists(test_case_path):
+            print(f"Loading configuration from {test_case_path}...")
+            try:
+                with open(test_case_path, "r") as config_file:
+                    config = json.load(config_file)
+                    return config
+            except json.JSONDecodeError as e:
+                raise ValueError(f"Failed to parse JSON file: {e}")
+        else:
+            raise FileNotFoundError("No bind test case found.")

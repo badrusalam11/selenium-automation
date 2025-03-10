@@ -20,11 +20,15 @@ To change the report extension output, update the `REPORT_EXTENSION` in `test.pr
 - For both JSON and PDF: `REPORT_EXTENSION=JSON,PDF`
 - For JSON only: `REPORT_EXTENSION=JSON`
 
+# Run Backend API Service
+Use: `python service/app.py`
+Alternative: `./serve`
+
 # Docker build
-docker build -t selenium-test .     
+`docker build -t selenium-test .`     
 
 # Run the application via docker
-docker-compose up
+`docker-compose up -d`
 
 # Run via docker swarm
 1. Initiate docker swarm: docker swarm init

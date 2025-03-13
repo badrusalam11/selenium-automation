@@ -4,6 +4,7 @@ from flask import Flask, request
 
 from app.controller.test_suites import test_suite_detail, test_suites
 from app.controller.test_run import clear_test_run, test_run
+from app import logger
 
 app = Flask(__name__)
 
@@ -11,6 +12,8 @@ app = Flask(__name__)
 def selenium_run():
     # Parse JSON payload.
     payload = request.get_json()
+    logger.info('payload', payload)
+    print(payload)
     result = test_run(payload)
     return result
     
@@ -23,6 +26,7 @@ def selenium_testsuites():
 @app.route('/selenium/testsuite/detail', methods=['POST'])
 def selenium_testsuite_detail():
     payload = request.get_json()
+    print(payload)
     result = test_suite_detail(payload)
     return result
 

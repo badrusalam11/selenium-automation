@@ -46,6 +46,8 @@ def after_step(context, step):
     context.steps.append(step_data)
     # Clear images for the next step
     context.images = []
+    event = EventUtil()
+    event.after_step(step_data)
 
 def after_scenario(context, scenario):
     print("After Scenario Hook")

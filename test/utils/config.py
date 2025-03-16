@@ -53,6 +53,10 @@ class Config:
                 "smtp_port": os.getenv("EMAIL_SMTP_PORT"),
                 "enable_tls": Formatter.str_to_bool(os.getenv("EMAIL_ENABLE_TLS")),
             }
+            config['omnirunner'] = {
+                "base_url": os.getenv("OMNIRUNNER_BASE_URL"),
+                "enable": Formatter.str_to_bool(os.getenv("OMNIRUNNER_ENABLE"))
+            }
             return config
 
         # Fall back to config.json if .env not found

@@ -3,6 +3,7 @@ import os
 
 import requests
 from test import CONFIG_DATA
+from test.utils.session_manager import session_manager
 
 
 class OmniRunner:
@@ -11,10 +12,12 @@ class OmniRunner:
 
     def update_status(self, id_test, step_name, status, report_path=None):
         try:
+            refnum = session_manager.load_reference_number()
             payload = {
                 "id_test": id_test,
                 "step_name": step_name,
-                "status": status
+                "status": status,
+                "reference_number": refnum['reference_number']
             }
             
             files = None

@@ -74,3 +74,4 @@ def after_test_suite():
     # Optionally clear session files after generating the report
     session_manager.clear_session_files()
     session_manager.clear_running_id()
+    session_manager.clear_reference_number()

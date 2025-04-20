@@ -3,12 +3,13 @@ from flask import jsonify, make_response
 
 from app.function.test_run import change_email, disable_email, execute_selenium_tests, load_running_id, wait_for_running_id
 from app.function.test_suites import get_testsuites
-from app.function.session import clear_session_files, clear_sessions
+from app.function.session import clear_reference_number, clear_session_files, clear_sessions, generate_reference_number
 
 
 def test_run(payload):
     testsuite_id = payload.get('testsuite_id') if payload else None
     email = payload.get('email') if payload else None
+    reference_number = payload.get('reference_number') if payload else None
     
     # check if email is not empty
     if email:
@@ -23,6 +24,13 @@ def test_run(payload):
             "message": "testsuite_id is required"
         }), 400)
     
+    if not reference_number:
+        return make_response(jsonify({
+            "status": "error",
+            "errorCode": "INVALID_REQUEST",
+            "message": "reference_number is required"
+        }), 400)
+
     #check if the testsuite exist
     testsuite_list = get_testsuites()
     if testsuite_id not in testsuite_list:
@@ -43,6 +51,15 @@ def test_run(payload):
                 "running_id": running_data["running_id"]
             }
         }), 429) # HTTP 429 Too Many Requests
+    # Generate reference number file json
+    check_refnum = generate_reference_number(reference_number)
+    if not check_refnum:
+        return make_response(jsonify({
+            "status": "error",
+            "errorCode": "REFERENCE_NUMBER_ERROR",
+            "message": "Failed to generate reference number"
+        }), 500)
+    
     # Run Selenium tests in a background thread
     threading.Thread(target=execute_selenium_tests, args=(testsuite_id,)).start()
 
@@ -68,6 +85,7 @@ def test_run(payload):
 def clear_test_run():
     clear_session_files()
     clear_sessions()
+    clear_reference_number()
     return make_response(jsonify({
         'status':'success',
         'message':'Success to reset selenium run'

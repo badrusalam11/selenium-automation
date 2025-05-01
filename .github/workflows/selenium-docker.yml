@@ -31,14 +31,14 @@ jobs:
       - name: Run tests in Docker
         run: |
           docker run --rm \
-            -e ENVIRONMENT=$ENVIRONMENT \
-            -e FLASK_PORT=$FLASK_PORT \
-            -e EMAIL_USERNAME=$EMAIL_USERNAME \
-            -e EMAIL_PASSWORD=$EMAIL_PASSWORD \
-            -e EMAIL_SMTP_SERVER=$EMAIL_SMTP_SERVER \
-            -e EMAIL_SMTP_PORT=$EMAIL_SMTP_PORT \
-            -e EMAIL_ENABLE_TLS=$EMAIL_ENABLE_TLS \
-            -e OMNIRUNNER_BASE_URL=$OMNIRUNNER_BASE_URL \
-            -e OMNIRUNNER_ENABLE=$OMNIRUNNER_ENABLE \
+            -e "ENVIRONMENT=$ENVIRONMENT" \
+            -e "FLASK_PORT=$FLASK_PORT" \
+            -e "EMAIL_USERNAME=$EMAIL_USERNAME" \
+            -e "EMAIL_PASSWORD=$EMAIL_PASSWORD" \
+            -e "EMAIL_SMTP_SERVER=$EMAIL_SMTP_SERVER" \
+            -e "EMAIL_SMTP_PORT=$EMAIL_SMTP_PORT" \
+            -e "EMAIL_ENABLE_TLS=$EMAIL_ENABLE_TLS" \
+            -e "OMNIRUNNER_BASE_URL=$OMNIRUNNER_BASE_URL" \
+            -e "OMNIRUNNER_ENABLE=$OMNIRUNNER_ENABLE" \
             -v ${{ github.workspace }}:/app \
             selenium-tests:test

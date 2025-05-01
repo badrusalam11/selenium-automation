@@ -68,5 +68,6 @@ class Config:
                     return config
             except json.JSONDecodeError as e:
                 raise ValueError(f"Failed to parse JSON file: {e}")
+            print("config", config)
         else:
             raise FileNotFoundError("No configuration file found (.env or config.json).")

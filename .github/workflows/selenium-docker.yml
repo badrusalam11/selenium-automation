@@ -10,6 +10,17 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    env:
+      ENVIRONMENT: ${{ secrets.ENVIRONMENT }}
+      FLASK_PORT: ${{ secrets.FLASK_PORT }}
+      EMAIL_USERNAME: ${{ secrets.EMAIL_USERNAME }}
+      EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+      EMAIL_SMTP_SERVER: ${{ secrets.EMAIL_SMTP_SERVER }}
+      EMAIL_SMTP_PORT: ${{ secrets.EMAIL_SMTP_PORT }}
+      EMAIL_ENABLE_TLS: ${{ secrets.EMAIL_ENABLE_TLS }}
+      OMNIRUNNER_BASE_URL: ${{ secrets.OMNIRUNNER_BASE_URL }}
+      OMNIRUNNER_ENABLE: ${{ secrets.OMNIRUNNER_ENABLE }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -18,4 +29,16 @@ jobs:
         run: docker build -f Dockerfile.test -t selenium-tests:test .
 
       - name: Run tests in Docker
-        run: docker run --rm -v ${{ github.workspace }}:/app selenium-tests:test
+        run: |
+          docker run --rm \
+            -e ENVIRONMENT=$ENVIRONMENT \
+            -e FLASK_PORT=$FLASK_PORT \
+            -e EMAIL_USERNAME=$EMAIL_USERNAME \
+            -e EMAIL_PASSWORD=$EMAIL_PASSWORD \
+            -e EMAIL_SMTP_SERVER=$EMAIL_SMTP_SERVER \
+            -e EMAIL_SMTP_PORT=$EMAIL_SMTP_PORT \
+            -e EMAIL_ENABLE_TLS=$EMAIL_ENABLE_TLS \
+            -e OMNIRUNNER_BASE_URL=$OMNIRUNNER_BASE_URL \
+            -e OMNIRUNNER_ENABLE=$OMNIRUNNER_ENABLE \
+            -v ${{ github.workspace }}:/app \
+            selenium-tests:test

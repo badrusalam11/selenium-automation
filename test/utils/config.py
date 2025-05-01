@@ -34,17 +34,13 @@ class Config:
         return properties
     
     def load_config(config_path="config.json"):
-        """
-        Loads configuration data from an .env file if it exists.
-        Otherwise, loads configuration from the provided JSON file.
-        :param config_path: Path to the config.json file (used if .env is not found).
-        :return: Dictionary containing the loaded configuration data.
-        """
         config = {}
-        # Check for .env file
-        if os.path.exists(".env"):
-            print("Loading configuration from .env file...")
-            load_dotenv()  # Load environment variables from .env
+
+        # Always attempt to load environment variables from system or .env
+        load_dotenv()  # Will do nothing if .env doesn't exist — that's okay
+
+        if os.getenv("EMAIL_USERNAME"):
+            print("Loading configuration from environment variables...")
             config['environment'] = os.getenv("ENVIRONMENT")
             config["email"] = {
                 "username": os.getenv("EMAIL_USERNAME"),
@@ -59,7 +55,7 @@ class Config:
             }
             return config
 
-        # Fall back to config.json if .env not found
+        # Fallback if env vars aren't set
         if os.path.exists(config_path):
             print(f"Loading configuration from {config_path}...")
             try:
@@ -68,6 +64,5 @@ class Config:
                     return config
             except json.JSONDecodeError as e:
                 raise ValueError(f"Failed to parse JSON file: {e}")
-            print("config", config)
         else:
             raise FileNotFoundError("No configuration file found (.env or config.json).")

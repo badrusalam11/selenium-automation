@@ -13,6 +13,7 @@ REPORTS_JSON_FOLDER = os.path.join(TEST_DIR, "reports", "json")
 PROPERTIES_FILE = os.path.join(os.getcwd(), "test.properties")
 CONFIG_FILE = os.path.join(os.getcwd(), "config.json")
 BIND_TEST_CASE_FOLDER = os.path.join(TEST_DIR, "bind_test_case")
+REFERENCE_NUMBER_FILE = os.path.join(os.getcwd(), "refnum.json")
 
 from test.utils.config import Config
 Config.ensure_folders_exist()

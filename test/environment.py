@@ -46,6 +46,8 @@ def after_step(context, step):
     context.steps.append(step_data)
     # Clear images for the next step
     context.images = []
+    event = EventUtil()
+    event.after_step(step_data)
 
 def after_scenario(context, scenario):
     print("After Scenario Hook")
@@ -72,3 +74,4 @@ def after_test_suite():
     # Optionally clear session files after generating the report
     session_manager.clear_session_files()
     session_manager.clear_running_id()
+    session_manager.clear_reference_number()

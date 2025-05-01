@@ -6,5 +6,9 @@
         "smtp_server":"smtp.gmail.com",
         "smtp_port":587,
         "enable_tls": true
+    },
+    "omnirunner":{
+        "base_url":"http://localhost:6000",
+        "enable":true
     }
 }

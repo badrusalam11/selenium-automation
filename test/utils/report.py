@@ -155,7 +155,8 @@ class Report:
             "start_time": start_time,
             "end_time": end_time,
             "duration": duration,
-            "images":images
+            "images":images,
+            "status":2,
         }
 
     @staticmethod

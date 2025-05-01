@@ -1,7 +1,7 @@
 import json
 import os
 from pathlib import Path
-from test import SESSION_FILE, SESSIONS_FOLDER, RUNNING_ID_FILE
+from test import REFERENCE_NUMBER_FILE, SESSION_FILE, SESSIONS_FOLDER, RUNNING_ID_FILE
 from test.utils.formatter import Formatter
 
 class SessionManager:
@@ -9,6 +9,7 @@ class SessionManager:
         # Path to store sessions in a JSON file
         self.session_file = SESSION_FILE 
         self.running_id_file = RUNNING_ID_FILE 
+        self.reference_number_file = REFERENCE_NUMBER_FILE
         # Ensure the directory exists
         if not os.path.exists(os.path.dirname(self.session_file)):
             os.makedirs(os.path.dirname(self.session_file))
@@ -67,6 +68,15 @@ class SessionManager:
         for session_file in sessions_path.glob("*.json"):
             session_file.unlink()
 
+    def clear_reference_number(self):
+        if os.path.exists(self.reference_number_file):
+            os.remove(self.reference_number_file)
+
+    def load_reference_number(self):
+        if os.path.exists(self.reference_number_file):
+            with open(self.reference_number_file, "r") as file:
+                return json.load(file)
+        return {}
 
 # Singleton instance to access session manager
 session_manager = SessionManager()

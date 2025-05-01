@@ -18,4 +18,4 @@ jobs:
         run: docker build -f Dockerfile.test -t selenium-tests:test .
 
       - name: Run tests in Docker
-        run: docker run --rm -v ${{ github.workspace }}:/app selenium-tests
+        run: docker run --rm -v ${{ github.workspace }}:/app selenium-tests:test
